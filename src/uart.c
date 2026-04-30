@@ -17,9 +17,13 @@ int uart_init() {
   for (i = 0; i < 4; i++) {  // uart0 to uart2 are adjacent
     up = &uart[i];
     up->base = (char*)(0x101F1000 + i * 0x1000);
+    *(up->base + UARTIBRD) = uart_rate_divisors[4 - i];
+    *(up->base + UARTLCR) = 0x60;
     up->n = i;
   }
   uart[3].base = (char*)(0x10009000);  // uart3 at 0x10009000
+  *(uart[3].base + UARTIBRD) = uart_rate_divisors[1];
+  *(uart[3].base + UARTLCR) = 0x60;
 }
 
 // input a char from UART pointed by up

@@ -6,7 +6,7 @@ int sum;
 
 #include "uart.h"  // UART driver code file
 
-int main() {
+int tomato() {
   int i;
   sum = 10;
   char string[64];
@@ -16,12 +16,28 @@ int main() {
   up = &uart[0];  // test UART0
   uprints(up, "Enter lines from serial terminal 0\n\r");
   sum = 1000;
-  while (1) {
-    ugets(up, string);
-    uprints(up, " ");
-    uprints(up, string);
-    uprints(up, "\n\r");
-    if (strcmp(string, "end") == 0) break;
+
+  for(i = 0; i < 4; i++){
+    uprintf(up, "UART[");
+    uputc(up, i + '0');
+    uprintf(up, "] Baudrate: " );
+    UART* currUart = &uart[i];
+    int fuartclk = 7380000;
+    int baudDivisor = *(currUart->base + UARTIBRD);
+    // uputc(up, (fuartclk * 1) + '0');
+    // unsigned char temp = *(currUart->base + UARTIBRD);
+    // for (int j = 0; j < 8; j++){
+    //   uprintf(up, ((temp & 0x80) == 0x80) ? "1" : "0");
+    //   temp = temp << 1;
+    // }
+    uprintf(up, "%d", fuartclk/(16 * baudDivisor));
+    uprintf(up, "\n\rUART[");
+    uputc(up, i + '0');
+    uprintf(up, "] Line Control Register: 0x" );
+    unsigned char lcr = *(currUart->base + UARTLCR);
+    uprintf(up, "%x", lcr);
+    uprintf(up, "\n\r");
+
   }
 
   uprints(up, "Compute sum of array:\n\r");
